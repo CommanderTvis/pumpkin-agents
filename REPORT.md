@@ -20,12 +20,12 @@ renderer, so we did not have to write either one.
 
 ## 2. PEAS & Environment Characterization
 
-| Phase     | Performance                              | Environment           | Actuators                | Sensors              |
-|-----------|------------------------------------------|-----------------------|--------------------------|----------------------|
-| 0 &mdash; | Reach goal wool                          | Walls, 1 agent        | `MOVE_{N,E,S,W}`, `WAIT` | Full grid            |
-| 1 &mdash; | Path length, nodes expanded, ms/decision | Walls, goals, terrain | + `PICKUP`, `DROP`       | Full grid            |
-| 2 &mdash; | Score in Pumpkin Tag                     | Walls, 2 agents       | as above                 | Full grid            |
-| 3 &mdash; | Safe cells found before a wrong step     | Wumpus world          | as above                 | Local 4-neighborhood |
+| Phase | Performance                              | Environment           | Actuators                | Sensors              |
+|-------|------------------------------------------|-----------------------|--------------------------|----------------------|
+| 0     | Reach goal wool                          | Walls, 1 agent        | `MOVE_{N,E,S,W}`, `WAIT` | Full grid            |
+| 1     | Path length, nodes expanded, ms/decision | Walls, goals, terrain | + `PICKUP`, `DROP`       | Full grid            |
+| 2     | Score in Pumpkin Tag                     | Walls, 2 agents       | as above                 | Full grid            |
+| 3     | Safe cells found before a wrong step     | Wumpus world          | as above                 | Local 4-neighborhood |
 
 The properties of the task environment change between phases. Observability
 goes from fully observable in phases 0&ndash;2 to partially observable in
@@ -45,10 +45,10 @@ There are three layers, all under `plugin/src/main/kotlin/`:
   `agent/{Action, Percept, AgentState, Brain}.kt`,
   `agent/search/SearchProblem.kt`. These are plain data classes plus one
   `Brain` interface. Every brain implements one function that maps the latest
-  percept to a chosen action &mdash; the percept→action function from R&N §2.1.
+  percept to a chosen action &mdash; the percept&rarr;action function from R&N §2.1.
 - Brains: `agent/brains/`. Related algorithms share a file.
   `SearchBrain.kt` holds BFS / DFS / UCS / A\*, `MinimaxBrain.kt` holds
-  Minimax and α-β, and `PrologBrain.kt` / `ReflexBrain.kt` stand on their own.
+  Minimax and &alpha;-&beta;, and `PrologBrain.kt` / `ReflexBrain.kt` stand on their own.
   Each brain has unit tests that run without the game, against the same
   `Percept` interface.
 - Game integration: a plugin entry point turns the agent on inside the game,
@@ -153,7 +153,7 @@ is held fixed while the predator thinks &mdash; the current build has no real
 adversarial prey, and adding one is a one-class change to `MinimaxBrain`.
 
 `MinimaxBrain` searches all moves to a fixed depth (4 plies by default).
-`AlphaBetaBrain` adds α-β pruning. On the `arena` map, with the predator at
+`AlphaBetaBrain` adds &alpha;-&beta; pruning. On the `arena` map, with the predator at
 `(3,3)`, the prey at `(15,15)`, and depth 3:
 
 | Brain     | Nodes expanded (1st decision) |
@@ -161,7 +161,7 @@ adversarial prey, and adding one is a one-class change to `MinimaxBrain`.
 | Minimax   | 19                            |
 | AlphaBeta | 13                            |
 
-At this depth on this map, α-β pruning cuts about a third of the explored
+At this depth on this map, &alpha;-&beta; pruning cuts about a third of the explored
 states &mdash; within the textbook lower bound of √(bᵈ) under perfect move
 ordering &mdash; while choosing the same predator move as plain Minimax (a unit
 test checks this). The counts are small because the prey is static during the
