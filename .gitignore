@@ -1,0 +1,10 @@
+build/
+/run/
+DEMO.md
+spec.md
+.claude/
+CLAUDE.local.md
+*.err
+.gradle/
+scripts
+REPORT.pdf

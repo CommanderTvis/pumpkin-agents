@@ -1,0 +1,12 @@
+name: corridor
+brains: [REFLEX, BFS]
+width: 8
+height: 3
+legend:
+  "#": WALL
+  ".": FLOOR
+  "R": GOAL_RED
+rows: |
+  ########
+  #......R
+  ########

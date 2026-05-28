@@ -1,0 +1,31 @@
+[versions]
+kotlin = "2.3.21"
+shadow = "9.4.1"
+spigot = "1.19.4-R0.1-SNAPSHOT"
+pluginApi = "19.0.2"
+snakeyaml = "2.6"
+tuprolog = "1.0.4"
+holographicdisplays = "3.0.0"
+kotest = "5.8.0"
+junit = "5.10.2"
+paperVersion = "1.19.4"
+paperBuild = "550"
+
+[libraries]
+spigot-api = { module = "org.spigotmc:spigot-api", version.ref = "spigot" }
+pluginApi-common = { module = "io.github.commandertvis.plugin:common", version.ref = "pluginApi" }
+pluginApi-command = { module = "io.github.commandertvis.plugin:command", version.ref = "pluginApi" }
+pluginApi-chat = { module = "io.github.commandertvis.plugin:chat-components", version.ref = "pluginApi" }
+pluginApi-coroutines = { module = "io.github.commandertvis.plugin:coroutines", version.ref = "pluginApi" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+tuprolog-solve-classic = { module = "it.unibo.tuprolog:solve-classic-jvm", version.ref = "tuprolog" }
+tuprolog-dsl-theory = { module = "it.unibo.tuprolog:dsl-theory-jvm", version.ref = "tuprolog" }
+holographicdisplays-api = { module = "me.filoghost.holographicdisplays:holographicdisplays-api", version.ref = "holographicdisplays" }
+kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

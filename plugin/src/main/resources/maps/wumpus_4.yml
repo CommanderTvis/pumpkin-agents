@@ -1,0 +1,17 @@
+name: wumpus_4
+brains: [PROLOG]
+width: 6
+height: 6
+legend:
+  "#": WALL
+  ".": FLOOR
+  "G": GOLD
+  "P": PIT
+  "W": WUMPUS
+rows: |
+  ######
+  #....#
+  #....#
+  #..G.#
+  #PW..#
+  ######

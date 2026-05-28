@@ -1,0 +1,8 @@
+name: PumpkinAgents
+version: ${version}
+main: io.github.commandertvis.pumpkins.PumpkinPlugin
+api-version: '1.19'
+authors: [Iaroslav Postovalov]
+description: Minecraft implementation of the ACS-204 Artificial Intelligence project
+depend: [PluginApi]
+softdepend: [HolographicDisplays]
