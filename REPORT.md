@@ -73,20 +73,18 @@ share the same `Percept → Action` contract but differ in what they reason over
 (map, opponent, knowledge base):
 
 ```mermaid
-flowchart TD
-    Brain[Brain contract: percept maps to action]
-    Brain --> P0[Phase 0: ReflexBrain]
-    Brain --> P1[Phase 1: BFS / DFS / UCS / A*]
-    Brain --> P2[Phase 2: Minimax / AlphaBeta]
-    Brain --> P3[Phase 3: PrologBrain / KB]
+flowchart LR
+    P0[Phase 0: ReflexBrain] --> P1[Phase 1: BFS / DFS / UCS / A*]
+    P1 --> P2[Phase 2: Minimax / AlphaBeta]
+    P2 --> P3[Phase 3: PrologBrain / KB]
 ```
 
-**Atomic ticks.** Every decision tick: collect every agent's chosen action,
-resolve conflicts deterministically (lower agent-id wins on shared cells), then
-apply all moves in one pass.
+Every decision tick is atomic: collect every agent's chosen action, resolve
+conflicts deterministically (lower agent-id wins on shared cells), then apply
+all moves in one pass.
 
-**Reproducibility.** A configurable seed is logged at every plugin enable; all
-benchmark runs ship with their seed in the CSV.
+Runs are reproducible. A configurable seed is logged at every plugin enable,
+and all benchmark runs ship with their seed in the CSV.
 
 ## 4. Phase 0 — Situated Agents
 
@@ -175,7 +173,7 @@ written in **actual Prolog** and executed by
 University of Bologna. There is no native bridge, no JPL, no SWI-Prolog
 install: the solver is a normal JVM library, bundled into the plugin jar.
 
-**Knowledge representation.** Each tick the brain rebuilds a small dynamic
+Each tick the brain rebuilds a small dynamic
 knowledge base of percept facts (`visited(X, Z)`, `breeze(X, Z)`,
 `stench(X, Z)`) from what the agent has sensed so far, and runs it against a
 fixed static program. The textbook closed-world rule that "a visited cell with
@@ -206,15 +204,15 @@ in the static program — `breeze(_, _) :- fail.` and the same for `stench/2`
 and `visited/2` — so the predicates are always defined; the positive ground
 facts in the dynamic KB then drive the actual semantics.
 
-**Why Prolog rather than a SAT solver.** Both R&N §7 and §8 prove Wumpus
-safety; the choice of encoding is independent of correctness. Prolog matches
+The choice between Prolog and a SAT solver is independent of correctness —
+both R&N §7 and §8 prove Wumpus safety. Prolog matches
 the textbook surface syntax almost line-for-line, and the inference engine
 itself doesn't have to be built — we hand 2p-kt the clauses, ask the query,
 read out the bindings. A propositional encoding would have demanded an
 explicit per-cell variable space and a SAT call per query; SLD-resolution
 over a few percept facts gives the same answer in fewer moving parts.
 
-**Path-finding stays in Kotlin.** Once the safe-cells set is known, the brain
+Path-finding itself stays in Kotlin. Once the safe-cells set is known, the brain
 runs a vanilla BFS over the safe subgraph to choose its next step (preferring
 unvisited safe neighbours; falling back to the shortest path back to the
 start once gold has been picked up). The spec only asks for Prolog at the
@@ -233,12 +231,12 @@ flowchart LR
     KnownSafe -->|agent steps in, percept arrives| Visited[Visited]
 ```
 
-**Behaviour.** On the `wumpus_4` map the agent walks only on cells the Prolog
+On the `wumpus_4` map the agent walks only on cells the Prolog
 solver has proven safe, grabs the gold when glitter is sensed, and walks
 back to the start through the same known-safe corridor. The unit suite
 asserts the agent never steps on a pit or the Wumpus across 200 ticks.
 
-**Soundness vs completeness.** The encoding is *sound* — every cell the
+The encoding is *sound* — every cell the
 solver returns from `safe/2` really is safe — but *not complete*: we don't
 attempt cross-cell elimination ("this pit must be at A, because A and B both
 register breeze but only A is adjacent to a fresh breeze"). For the benchmark
