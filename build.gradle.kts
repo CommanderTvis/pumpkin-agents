@@ -188,7 +188,8 @@ tasks.register<JavaExec>("runServer") {
     jvmArgs = listOf("-Xms1G", "-Xmx2G", "-DPaper.IgnoreJavaVersion=true")
     args("--nogui")
     doFirst {
-        if (!paperJar.exists()) throw IOException("Paper jar not present at $paperJar — `downloadPaper` did not run")
+        if (!paperJar.exists())
+            throw IOException("Paper JAR not present at $paperJar, `downloadPaper` did not run")
     }
 }
 
