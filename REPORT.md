@@ -16,9 +16,7 @@ We use Minecraft as the setting for a *thinking-rationally / acting-rationally*
 demo (R&N §1, the four paradigms). A pumpkin block on a flat world is a mobile
 agent: it senses the cells around it, picks an action, and the game's tick loop
 runs that action on the next tick. The game is both the simulator and the
-renderer, so we did not have to write either one. The whole project is
-**symbolic / GOFAI** (Good Old-Fashioned AI): search, adversarial reasoning,
-and propositional logic.
+renderer, so we did not have to write either one.
 
 ## 2. PEAS & Environment Characterization
 
