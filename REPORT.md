@@ -18,8 +18,7 @@ exhibit (R&N §1, four paradigms). A pumpkin block on a flat world is a
 mobile agent: it perceives the cells around itself, picks an action, and the
 game's tick loop executes that action on the next tick. The world acts as both
 simulator and renderer, so neither has to be written. The whole project is
-**symbolic / GOFAI** (Good Old-Fashioned AI): search, adversarial reasoning, and propositional logic —
-no machine learning, no neural networks. This is by design and fits the syllabus.
+**symbolic / GOFAI** (Good Old-Fashioned AI): search, adversarial reasoning, and propositional logic.
 
 ## 2. PEAS & Environment Characterization
 
@@ -124,14 +123,14 @@ Empirical comparison on `maze_s` (seed=1234, agent at `(1, 1)`, single decision
 from the start state — brains replan each tick, so the *first* decision is the
 most informative call):
 
-| Brain | Ticks to goal | Nodes expanded (1st decision) | Max frontier |
-| --- | --- | --- | --- |
-| BFS | 26 | 146 | 11 |
-| DFS | did-not-reach | 27 | 18 |
-| UCS (cost) | 26 | 147 | 14 |
-| A\* (Manhattan) | 26 | 67 | 32 |
-| A\* (Euclidean) | 26 | 132 | 33 |
-| A\* (overshoot) | 26 | 29 | 16 |
+| Brain           | Ticks to goal | Nodes expanded (1st decision) | Max frontier |
+|-----------------|---------------|-------------------------------|--------------|
+| BFS             | 26            | 146                           | 11           |
+| DFS             | did-not-reach | 27                            | 18           |
+| UCS (cost)      | 26            | 147                           | 14           |
+| A\* (Manhattan) | 26            | 67                            | 32           |
+| A\* (Euclidean) | 26            | 132                           | 33           |
+| A\* (overshoot) | 26            | 29                            | 16           |
 
 A\* with the admissible Manhattan heuristic expands roughly **half** the nodes
 of BFS while finding the same 26-step path. The Euclidean heuristic is also
