@@ -99,7 +99,7 @@ map the brain moves one cell per scheduler step toward the goal:
 ########
 ```
 
-It takes O(n) decisions to cross n cells. It works on any single-room layout
+It takes $O(n)$ decisions to cross n cells. It works on any single-room layout
 where the goal is somewhere along the right wall.
 
 ## 5. Phase 1 &mdash; Moving Agents (Search)
@@ -172,16 +172,13 @@ and widen the gap.
 
 ## 7. Phase 3 &mdash; Reasoning Agents (Wumpus / first-order KB in Prolog)
 
-`PrologBrain` is the knowledge-based agent from R&N §7. The inference step is
-written in **real Prolog** and run by
-[2p-kt](https://github.com/tuProlog/2p-kt), a pure-Kotlin Prolog from the
-University of Bologna. There is no native bridge and no JPL or SWI-Prolog
-install: the solver is a normal JVM library, bundled into the plugin jar.
+`PrologBrain` is the knowledge-based agent from R&N §7. The inference step is written in real Prolog and run by
+[2p-kt](https://github.com/tuProlog/2p-kt), a pure-Kotlin Prolog from the University of Bologna. It does not use
+bridging to native code: the solver is a normal JVM library, the plugin is linked against.
 
 On each tick the brain rebuilds a small dynamic knowledge base of percept facts
-(`visited(X, Z)`, `breeze(X, Z)`, `stench(X, Z)`) from what the agent has
-sensed so far, and runs it against a fixed program. The textbook rule &mdash;
-a visited cell with no breeze and no stench makes its neighbours safe &mdash;
+(`visited(X, Z)`, `breeze(X, Z)`, `stench(X, Z)`) from what the agent has sensed so far, and runs it against a fixed
+program. The textbook rule &mdash; a visited cell with no breeze and no stench makes its neighbours safe &mdash;
 is written directly as Horn clauses:
 
 ```prolog
@@ -208,15 +205,10 @@ program &mdash; `breeze(_, _) :- fail.` and the same for `stench/2` and
 `visited/2` &mdash; so the predicates always exist. The positive ground facts
 in the dynamic KB then give the real meaning.
 
-We could use a SAT solver instead, and correctness would be the same: both
-R&N §7 and §8 prove Wumpus safety. We chose Prolog because it matches the
-textbook syntax closely and we do not have to write the inference engine: we
-give 2p-kt the clauses, ask the query, and read the bindings. A propositional
-encoding would need an explicit per-cell variable space and one SAT call per
-query, while SLD resolution over a few percept facts gives the same answer with
-fewer parts.
+We chose Prolog because it matches the textbook syntax and we do not have to write the inference engine manually:
+we give to Prolog interpreter the clauses, ask the query, and read the bindings.
 
-Path-finding stays in Kotlin. Once the set of safe cells is known, the brain
+Path-finding stays in Kotlin (without calling Prolog). Once the set of safe cells is known, the brain
 runs a plain BFS over the safe subgraph to pick its next step. It prefers
 unvisited safe neighbours, and once it has the gold it takes the shortest known
 path back to the start. The spec asks for Prolog only at the deduction step;
@@ -257,20 +249,13 @@ Minimax is one-sided. The prey's moves are scored, but the prey is not a real
 player. A second `Brain` on the prey would close the loop, and the `Scheduler`
 already supports several agents with deterministic conflict resolution.
 
-The project has no native dependencies. The Wumpus agent runs Prolog inside the
-JVM through [2p-kt](https://github.com/tuProlog/2p-kt), so the grader needs
-nothing beyond the JDK the Paper server already uses: no JPL, no SWI-Prolog, no
-`libjpl.{dylib,so}`, and no `java.library.path`.
-
 ## 9. Reproducing the results
 
-Every row in `metrics/metrics.csv` comes from a `/pumpkin run` call. The README
-has a script you can copy and paste that drives the in-game commands remotely.
-The end-to-end test task runs the same script in CI.
+Metrics in `metrics/metrics.csv` appear from `/pumpkin run` calls. The end-to-end tests run the Minecraft same commands.
 
 ## References
 
 - Russell, Norvig &mdash; *Artificial Intelligence: A Modern Approach*, 4th ed. Chapters 2, 3, 4, 5, 7, 8.
 - 2p-kt &mdash; Ciatto, Calegari, Omicini et al., [github.com/tuProlog/2p-kt](https://github.com/tuProlog/2p-kt) (University of Bologna).
 - Paper documentation &mdash; [docs.papermc.io](https://docs.papermc.io)
-- plugin-api 19.0.2 &mdash; Iaroslav Postovalov (2019&ndash;2020, maintained since), [gitlab.com/CMDR_Tvis/plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api)
+- plugin-api 19.0.2 &mdash; Iaroslav Postovalov (2019&ndash;2020, maintained since),[gitlab.com/CMDR_Tvis/plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api)
