@@ -3,7 +3,7 @@
 A Minecraft (Paper 1.19.4) plugin for the ACS-204 *Artificial Intelligence*
 course at Constructor University Bremen. Each carved pumpkin on a flat world is
 an autonomous agent: it senses the cells around it, decides with one AI method
-from the syllabus, and acts — hopping one block per scheduler step, or picking
+from the syllabus, and acts &mdash; hopping one block per scheduler step, or picking
 up the block above it. The world is both the simulator and the renderer.
 
 ## Brains
@@ -20,12 +20,29 @@ Source lives under `plugin/src/main/kotlin/agent/brains/`.
 
 ## Run it
 
+The Gradle `run` task self-provisions everything &mdash; it downloads the pinned Paper
+1.19.4 build, builds against a local JDK 21 toolchain, installs the plugin, copies
+the benchmark maps, and boots the server:
+
 ```sh
-sdk install java 17.0.19-tem   # one-time, via SDKMAN
-./gradlew run                  # downloads pinned Paper, installs the plugin, boots the server
+./gradlew run
 ```
 
-Then drive it from the in-game console (or RCON):
+To run the production server in Docker instead &mdash; handy for a longer-lived or
+remote instance &mdash; build the plugin jar and hand it to a Paper image:
+
+```sh
+./gradlew :plugin:shadowJar    # produces plugin/build/libs/pumpkin-agents-0.1.0-all.jar
+
+docker run -d --name pumpkins -p 25565:25565 \
+  -e EULA=TRUE -e TYPE=PAPER -e VERSION=1.19.4 \
+  -v "$PWD/plugin/build/libs/pumpkin-agents-0.1.0-all.jar:/plugins/pumpkin-agents.jar" \
+  -v "$PWD/maps:/data/plugins/PumpkinAgents/maps" \
+  itzg/minecraft-server
+```
+
+Then drive it from the in-game console (or over RCON &mdash; under Docker that's
+`docker exec -i pumpkins rcon-cli /pumpkin …`):
 
 ```
 /pumpkin map load wumpus_8     # load a benchmark map
@@ -34,6 +51,9 @@ Then drive it from the in-game console (or RCON):
 /pumpkin state                 # what the agent sees and believes
 /pumpkin metrics               # print + append a row to metrics.csv
 ```
+
+To watch the agents live, point any Minecraft 1.19.4 client (for example,
+[Prism Launcher](https://prismlauncher.org/)) at `localhost` server.
 
 Other commands: `map save`, `step` (one tick), `reset` (clear agents, keep the
 map). Brains accepted by `spawn`: `REFLEX BFS DFS UCS ASTAR ASTAR_EUCLID
@@ -54,6 +74,6 @@ ASTAR_BAD MINIMAX ALPHABETA PROLOG`.
 { "decisionsPerSecond": 2, "randomSeed": 1234, "defaultBrain": "ASTAR" }
 ```
 
-Built on [plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api) — a Kotlin/Bukkit
-DSL the author wrote in 2019–2020, used here unmodified. See `REPORT.md` for the
+Built on [plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api) &mdash; a Kotlin/Bukkit
+DSL the author wrote in 2019&ndash;2020, used here unmodified. See `REPORT.md` for the
 write-up and `DEMO.md` for the video walkthrough.

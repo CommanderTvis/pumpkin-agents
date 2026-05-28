@@ -1,4 +1,4 @@
-# Pumpkin Agents — ACS-204 Project Report
+# Pumpkin Agents &mdash; ACS-204 Project Report
 
 > Constructor University Bremen, ACS-204 Artificial Intelligence
 > Team: Iaroslav Postovalov (solo)
@@ -6,9 +6,9 @@
 > agents implementing every method on the course syllabus.
 
 > *Self-referential footnote.* The small Kotlin DSL used for command
-> registration — [plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api) — is
-> something I wrote in 2019–2020 (age 15–16). It still works on the current
-> host runtime — after some version bumps and actualizations prompted by
+> registration &mdash; [plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api) &mdash; is
+> something I wrote in 2019&ndash;2020 (age 15&ndash;16). It still works on the current
+> host runtime &mdash; after some version bumps and actualizations prompted by
 > Kotlin's evolution since.
 
 ## 1. Introduction
@@ -24,18 +24,18 @@ simulator and renderer, so neither has to be written. The whole project is
 
 | Phase           | Performance                                | Environment                                 | Actuators                | Sensors                                             |
 |-----------------|--------------------------------------------|---------------------------------------------|--------------------------|-----------------------------------------------------|
-| 0 — Situated    | Reach goal wool                            | Grid + walls, 1 agent                       | `MOVE_{N,E,S,W}`, `WAIT` | Full grid                                           |
-| 1 — Moving      | Path length, nodes expanded, ms/decision   | Grid + walls + goals + terrain (snow, sand) | + `PICKUP`, `DROP`       | Full grid                                           |
-| 2 — Interacting | Score in Pumpkin Tag                       | Grid + walls + 2 agents                     | as above                 | Full grid + opponent positions                      |
-| 3 — Reasoning   | Safe-cells deduced before first wrong step | Wumpus grid (hidden pits, Wumpus)           | as above                 | Local 4-neighborhood: `Breeze`, `Stench`, `Glitter` |
+| 0 &mdash; Situated    | Reach goal wool                            | Grid + walls, 1 agent                       | `MOVE_{N,E,S,W}`, `WAIT` | Full grid                                           |
+| 1 &mdash; Moving      | Path length, nodes expanded, ms/decision   | Grid + walls + goals + terrain (snow, sand) | + `PICKUP`, `DROP`       | Full grid                                           |
+| 2 &mdash; Interacting | Score in Pumpkin Tag                       | Grid + walls + 2 agents                     | as above                 | Full grid + opponent positions                      |
+| 3 &mdash; Reasoning   | Safe-cells deduced before first wrong step | Wumpus grid (hidden pits, Wumpus)           | as above                 | Local 4-neighborhood: `Breeze`, `Stench`, `Glitter` |
 
 The task-environment properties shift across phases. Observability goes from
-fully observable in phases 0–2 to partially observable in phase 3 (local
+fully observable in phases 0&ndash;2 to partially observable in phase 3 (local
 percepts only). The environment is deterministic throughout, and discrete
-everywhere — an integer `(x, z)` grid, four cardinal moves, finite cell types.
-Phases 0–1 are episodic (single-objective) while 2–3 are sequential. It is
-static in 0–1, semi-dynamic in 2 (the opponent moves), and static again in 3,
-and it is single-agent in 0–1 and 3 but multi-agent in 2 (the competitive
+everywhere &mdash; an integer `(x, z)` grid, four cardinal moves, finite cell types.
+Phases 0&ndash;1 are episodic (single-objective) while 2&ndash;3 are sequential. It is
+static in 0&ndash;1, semi-dynamic in 2 (the opponent moves), and static again in 3,
+and it is single-agent in 0&ndash;1 and 3 but multi-agent in 2 (the competitive
 Pumpkin Tag).
 
 ## 3. Architecture
@@ -45,9 +45,9 @@ Three layers, all in the `plugin/src/main/kotlin/` tree:
 - Domain (game-engine-independent): `world/GridWorld.kt`,
   `agent/{Action, Percept, AgentState, Brain}.kt`,
   `agent/search/SearchProblem.kt`. Pure data classes and a single `Brain`
-  contract — every brain implements one function that maps the latest
+  contract &mdash; every brain implements one function that maps the latest
   percept to a chosen action, exactly the percept→action function of R&N §2.1.
-- Brains: `agent/brains/`. Related algorithms share a file —
+- Brains: `agent/brains/`. Related algorithms share a file &mdash;
   `SearchBrain.kt` hosts BFS / DFS / UCS / A\*, `MinimaxBrain.kt` hosts
   Minimax and α-β, and `PrologBrain.kt` / `ReflexBrain.kt` stand alone. Every
   brain is unit-tested headlessly against the same `Percept` interface.
@@ -85,7 +85,7 @@ all moves in one pass.
 Runs are reproducible. A configurable seed is logged at every plugin enable,
 and all benchmark runs ship with their seed in the CSV.
 
-## 4. Phase 0 — Situated Agents
+## 4. Phase 0 &mdash; Situated Agents
 
 `ReflexBrain` implements the textbook right-hand wall-following rule. State is
 *only* the agent's facing direction (no map model). The corridor map shows the
@@ -100,27 +100,27 @@ brain runs at a steady 1 cell / scheduler step to the goal:
 Performance: O(n) decisions to traverse n cells; works on any single-room
 layout with the goal somewhere along the right wall.
 
-## 5. Phase 1 — Moving Agents (Search)
+## 5. Phase 1 &mdash; Moving Agents (Search)
 
 Four uninformed and informed search brains share a common `SearchProblem` (the
 R&N §3.1 five components) and a `Node`-based graph search:
 
-- `BfsBrain` — frontier as FIFO, complete and optimal for uniform costs.
-- `DfsBrain` — depth-first with cycle detection and a configurable depth cap.
-- `UcsBrain` — Dijkstra: PQ keyed on `g`. Used on the `maze_s` map, whose
+- `BfsBrain` &mdash; frontier as FIFO, complete and optimal for uniform costs.
+- `DfsBrain` &mdash; depth-first with cycle detection and a configurable depth cap.
+- `UcsBrain` &mdash; Dijkstra: PQ keyed on `g`. Used on the `maze_s` map, whose
   `SNOW` patches (cost 3) sit among cost-1 floor so the choice between
   equal-step paths reveals itself in path *cost*.
-- `AStarBrain` — PQ keyed on `g + h`. Three heuristics ship:
-    - `manhattan` — admissible + consistent.
-    - `euclidean` — admissible (looser bound).
-    - `diagonalOvershoot` — deliberately *inadmissible* (`(manhattan * 3) / 2`).
+- `AStarBrain` &mdash; PQ keyed on `g + h`. Three heuristics ship:
+    - `manhattan` &mdash; admissible + consistent.
+    - `euclidean` &mdash; admissible (looser bound).
+    - `diagonalOvershoot` &mdash; deliberately *inadmissible* (`(manhattan * 3) / 2`).
       Demonstrates that admissibility is required for optimality: it drops the
       optimality guarantee, so although on `maze_s` it happens to land on the
       same path as BFS (see the table below), on adversarial layouts it returns
       a longer one.
 
 Empirical comparison on `maze_s` (seed=1234, agent at `(1, 1)`, single decision
-from the start state — brains replan each tick, so the *first* decision is the
+from the start state &mdash; brains replan each tick, so the *first* decision is the
 most informative call):
 
 | Brain           | Ticks to goal | Nodes expanded (1st decision) | Max frontier |
@@ -135,18 +135,18 @@ most informative call):
 A\* with the admissible Manhattan heuristic expands roughly **half** the nodes
 of BFS while finding the same 26-step path. The Euclidean heuristic is also
 admissible but a looser bound, so it expands almost twice as many nodes as
-Manhattan. DFS hits its depth cap on `maze_s` and gives up — exactly the
+Manhattan. DFS hits its depth cap on `maze_s` and gives up &mdash; exactly the
 completeness gap R&N §3.4.3 warns about. The inadmissible `overshoot`
 heuristic expands the fewest nodes (it greedily commits to whichever direction
-*looks* shortest) and on this map happens to land on the same optimal path —
+*looks* shortest) and on this map happens to land on the same optimal path &mdash;
 on adversarial layouts it would diverge.
 
-## 6. Phase 2 — Interacting Agents (Pumpkin Tag)
+## 6. Phase 2 &mdash; Interacting Agents (Pumpkin Tag)
 
 The competitive sub-track is implemented. State is the pair `(pred, prey)`;
 evaluation is `−manhattan(pred, prey)`; the prey is held fixed during the
 predator's deliberation (we lack a real adversarial prey in the current
-build — adding one is a one-class change to `MinimaxBrain`).
+build &mdash; adding one is a one-class change to `MinimaxBrain`).
 
 `MinimaxBrain` enumerates moves to a fixed depth (default 4 plies);
 `AlphaBetaBrain` adds α-β pruning. On the `arena` map starting at predator
@@ -158,17 +158,17 @@ build — adding one is a one-class change to `MinimaxBrain`).
 | AlphaBeta | 13                            |
 
 α-β pruning trims roughly a third of the explored states at this depth on
-this map — within the textbook lower bound of √(bᵈ) under perfect move
-ordering — while picking the same predator move as plain Minimax (a unit
+this map &mdash; within the textbook lower bound of √(bᵈ) under perfect move
+ordering &mdash; while picking the same predator move as plain Minimax (a unit
 test pins this equivalence). The absolute counts are small because the prey
 is held static during the predator's deliberation; switching the prey to a
 real `Brain` would multiply the search space and amplify the gap.
 
-## 7. Phase 3 — Reasoning Agents (Wumpus / first-order KB in Prolog)
+## 7. Phase 3 &mdash; Reasoning Agents (Wumpus / first-order KB in Prolog)
 
 `PrologBrain` implements R&N §7's knowledge-based agent. The inference step is
 written in **actual Prolog** and executed by
-[2p-kt](https://github.com/tuProlog/2p-kt) — a pure-Kotlin Prolog from the
+[2p-kt](https://github.com/tuProlog/2p-kt) &mdash; a pure-Kotlin Prolog from the
 University of Bologna. There is no native bridge, no JPL, no SWI-Prolog
 install: the solver is a normal JVM library, bundled into the plugin jar.
 
@@ -192,21 +192,21 @@ adjacent(X, Z, X,  Z1) :- Z1 is Z + 1.
 adjacent(X, Z, X,  Z1) :- Z1 is Z - 1.
 ```
 
-`\+` is SLD negation-as-failure and `is/2` is arithmetic evaluation — both
+`\+` is SLD negation-as-failure and `is/2` is arithmetic evaluation &mdash; both
 supplied by 2p-kt's `DefaultBuiltins`. Querying `?- safe(X, Z).` enumerates
 every safe cell under the current KB; the brain intersects that with the
 passable grid to get its known-safe set.
 
 A subtle point: `\+ breeze(VX, VZ)` over a predicate with no clauses raises a
 spurious `existence_error`. We sidestep that by including three fail-clauses
-in the static program — `breeze(_, _) :- fail.` and the same for `stench/2`
-and `visited/2` — so the predicates are always defined; the positive ground
+in the static program &mdash; `breeze(_, _) :- fail.` and the same for `stench/2`
+and `visited/2` &mdash; so the predicates are always defined; the positive ground
 facts in the dynamic KB then drive the actual semantics.
 
-The choice between Prolog and a SAT solver is independent of correctness —
+The choice between Prolog and a SAT solver is independent of correctness &mdash;
 both R&N §7 and §8 prove Wumpus safety. Prolog matches
 the textbook surface syntax almost line-for-line, and the inference engine
-itself doesn't have to be built — we hand 2p-kt the clauses, ask the query,
+itself doesn't have to be built &mdash; we hand 2p-kt the clauses, ask the query,
 read out the bindings. A propositional encoding would have demanded an
 explicit per-cell variable space and a SAT call per query; SLD-resolution
 over a few percept facts gives the same answer in fewer moving parts.
@@ -235,8 +235,8 @@ solver has proven safe, grabs the gold when glitter is sensed, and walks
 back to the start through the same known-safe corridor. The unit suite
 asserts the agent never steps on a pit or the Wumpus across 200 ticks.
 
-The encoding is *sound* — every cell the
-solver returns from `safe/2` really is safe — but *not complete*: we don't
+The encoding is *sound* &mdash; every cell the
+solver returns from `safe/2` really is safe &mdash; but *not complete*: we don't
 attempt cross-cell elimination ("this pit must be at A, because A and B both
 register breeze but only A is adjacent to a fresh breeze"). For the benchmark
 maps the simpler rule is sufficient. Closing the gap is a matter of adding
@@ -247,7 +247,7 @@ program we hand it.
 
 The world is too forgiving in Phase 0: the right-hand rule succeeds on every
 map we ship, though a single-cell-thick wall connecting back on itself would
-break it — worth adding to the risks section in a future revision.
+break it &mdash; worth adding to the risks section in a future revision.
 
 Minimax is single-sided. The prey moves are scored but the prey isn't a real
 player; a second `Brain` running on the prey would close the loop, and the
@@ -257,7 +257,7 @@ resolution.
 Finally, the project has zero native dependencies. The Wumpus agent runs Prolog
 inside the JVM via [2p-kt](https://github.com/tuProlog/2p-kt), so nothing has to
 be installed on the grader's machine beyond the JDK that the Paper server
-already uses — no JPL, no SWI-Prolog, no `libjpl.{dylib,so}`, no
+already uses &mdash; no JPL, no SWI-Prolog, no `libjpl.{dylib,so}`, no
 `java.library.path`.
 
 ## 9. Reproducing the results
@@ -268,7 +268,7 @@ the end-to-end test task runs exactly that script in CI.
 
 ## References
 
-- Russell, Norvig — *Artificial Intelligence: A Modern Approach*, 4th ed. Chapters 2, 3, 4, 5, 7, 8.
-- 2p-kt — Ciatto, Calegari, Omicini et al., [github.com/tuProlog/2p-kt](https://github.com/tuProlog/2p-kt) (University of Bologna).
-- Paper documentation — [docs.papermc.io](https://docs.papermc.io)
-- plugin-api 19.0.2 — Iaroslav Postovalov (self, age 15–16, 2019–2020; maintained since), [gitlab.com/CMDR_Tvis/plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api)
+- Russell, Norvig &mdash; *Artificial Intelligence: A Modern Approach*, 4th ed. Chapters 2, 3, 4, 5, 7, 8.
+- 2p-kt &mdash; Ciatto, Calegari, Omicini et al., [github.com/tuProlog/2p-kt](https://github.com/tuProlog/2p-kt) (University of Bologna).
+- Paper documentation &mdash; [docs.papermc.io](https://docs.papermc.io)
+- plugin-api 19.0.2 &mdash; Iaroslav Postovalov (self, age 15&ndash;16, 2019&ndash;2020; maintained since), [gitlab.com/CMDR_Tvis/plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api)

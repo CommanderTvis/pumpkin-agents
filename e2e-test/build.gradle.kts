@@ -15,11 +15,9 @@ dependencies {
     testImplementation(kotlin("stdlib"))
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-kotlin.compilerOptions {
-    jvmTarget = JvmTarget.JVM_17
-}
+kotlin.compilerOptions.jvmTarget = JvmTarget.JVM_21
 
 evaluationDependsOn(":plugin")
 
@@ -36,18 +34,21 @@ tasks.test {
     dependsOn(
         pluginShadowJar,
         rootProject.tasks.named("downloadPaper"),
-        rootProject.tasks.named("downloadPluginApiRuntime")
+        rootProject.tasks.named("downloadPluginApiRuntime"),
     )
 
     systemProperty("pumpkin.paperJar", runDir.file("paper-$paperVer-$paperBld.jar").asFile.absolutePath)
+
     systemProperty(
         "pumpkin.pluginApiRuntimeJar",
         runDir.dir("plugins").file("runtime-$pluginApiVer.jar").asFile.absolutePath
     )
+
     systemProperty(
         "pumpkin.pluginJar",
         pluginShadowJar.flatMap { (it as org.gradle.jvm.tasks.Jar).archiveFile }.get().asFile.absolutePath
     )
+
     systemProperty("pumpkin.mapsDir", rootProject.layout.projectDirectory.dir("maps").asFile.absolutePath)
     systemProperty("pumpkin.serverDir", layout.buildDirectory.dir("e2e-server").get().asFile.absolutePath)
 }

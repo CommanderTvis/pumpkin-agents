@@ -27,8 +27,6 @@ dependencies {
     compileOnly(libs.pluginApi.command)
     compileOnly(libs.pluginApi.chat)
     compileOnly(libs.pluginApi.coroutines)
-    // HolographicDisplays — API only at compile time; the plugin jar is dropped into run/plugins by Gradle.
-    // softdepend in plugin.yml lets us start without it (HUD becomes a no-op).
     compileOnly(libs.holographicdisplays.api)
 
     // 2p-kt: pure-Kotlin Prolog. We exclude kotlin transitives so the plugin-api runtime jar stays
@@ -48,14 +46,14 @@ dependencies {
     // (we mark spigot compileOnly), so we need to add it ourselves for the test classpath.
     testImplementation(libs.snakeyaml)
     testImplementation(kotlin("stdlib"))
-    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit5"))
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 kotlin.compilerOptions {
-    jvmTarget = JvmTarget.JVM_17
-    freeCompilerArgs.addAll("-Xjsr305=strict", "-Xskip-metadata-version-check")
+    jvmTarget = JvmTarget.JVM_21
+    freeCompilerArgs.addAll("-Xjsr305=strict")
 }
 
 tasks.test {
@@ -73,25 +71,9 @@ tasks.processResources {
     }
 }
 
-// kotlin.enums.EnumEntries* (Kotlin 1.9 `.entries` support) is missing from
-// plugin-api's bundled 1.8.0 stdlib. We do NOT want to bundle the whole stdlib
-// (LinkageError on kotlin.Function from dual-classloader load), but we can ship
-// JUST the kotlin.enums package — there's no overlap with the 1.8.0 stdlib.
-val kotlinEnumsShim by configurations.creating
-dependencies {
-    kotlinEnumsShim("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.get()}")
-}
-
 tasks.shadowJar {
-    archiveBaseName.set("pumpkin-agents")
-    archiveClassifier.set("all")
-    // Pull in the kotlin.enums classes (Kotlin 1.9 `.entries` support) absent from plugin-api's 1.8.0 stdlib.
-    from(kotlinEnumsShim.map { zipTree(it) }) {
-        include("kotlin/enums/**")
-    }
-    // snakeyaml: not bundled — spigot-api ships it at runtime, so we ride that copy.
-    // 2p-kt — bundle but don't relocate (its packages don't collide with anything).
-    // Relocating would also need rewriting reflective lookups inside the solver, which is brittle.
+    archiveBaseName = "pumpkin-agents"
+    archiveClassifier = "all"
     mergeServiceFiles()
 }
 
