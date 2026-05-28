@@ -61,10 +61,12 @@ val downloadPluginApiRuntime by tasks.registering {
     group = "server"
     description = "Downloads plugin-api runtime $pluginApiVersion from GitLab next to our plugin"
     outputs.file(pluginApiRuntimeJar)
+
     doLast {
         pluginApiRuntimeJar.parentFile.mkdirs()
         if (pluginApiRuntimeJar.exists()) return@doLast
         logger.lifecycle("Fetching $pluginApiRuntimeJarName from GitLab...")
+
         URI(pluginApiRuntimeUrl).toURL().openStream().use { input ->
             pluginApiRuntimeJar.outputStream().use { input.copyTo(it) }
         }
@@ -90,6 +92,7 @@ val acceptEula by tasks.registering {
     description = "Writes eula=true to ./run/eula.txt"
     val eula = runDir.file("eula.txt").asFile
     outputs.file(eula)
+
     doLast {
         eula.parentFile.mkdirs()
         eula.writeText("eula=true\n")
@@ -153,8 +156,10 @@ val installPlugin by tasks.registering(Copy::class) {
     dependsOn(":plugin:shadowJar")
     from(project(":plugin").tasks.named("shadowJar"))
     into(runDir.dir("plugins"))
+
     doFirst {
-        runDir.dir("plugins").asFile.listFiles { f -> f.name.startsWith("pumpkin-agents") }
+        runDir.dir("plugins").asFile
+            .listFiles { f -> f.name.startsWith("pumpkin-agents") }
             ?.forEach { it.delete() }
     }
 }
@@ -166,9 +171,10 @@ val installMaps by tasks.registering(Copy::class) {
     into(runDir.dir("plugins/PumpkinAgents/maps"))
 }
 
-tasks.register<JavaExec>("runServer") {
+val runServer by tasks.registering(JavaExec::class) {
     group = "server"
     description = "Provisions Paper + plugin-api runtime, installs the plugin, and runs the server"
+
     dependsOn(
         downloadPaper,
         downloadPluginApiRuntime,
@@ -179,12 +185,14 @@ tasks.register<JavaExec>("runServer") {
         installPlugin,
         installMaps,
     )
+
     workingDir = runDir.asFile
     classpath = files(paperJar)
     mainClass = "io.papermc.paperclip.Main"
     standardInput = System.`in`
-    jvmArgs = listOf("-Xms1G", "-Xmx2G", "-DPaper.IgnoreJavaVersion=true")
+    jvmArgs = listOf("-Xms1G", "-Xmx2G", "--sun-misc-unsafe-memory-access=allow", "--enable-native-access=ALL-UNNAMED")
     args("--nogui")
+
     doFirst {
         if (!paperJar.exists())
             throw IOException("Paper JAR not present at $paperJar, `downloadPaper` did not run")
@@ -194,5 +202,5 @@ tasks.register<JavaExec>("runServer") {
 tasks.register("run") {
     group = "server"
     description = "Alias of runServer"
-    dependsOn("runServer")
+    dependsOn(runServer)
 }
