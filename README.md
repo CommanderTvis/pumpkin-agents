@@ -41,8 +41,7 @@ docker run -d --name pumpkins -p 25565:25565 \
   itzg/minecraft-server
 ```
 
-Then drive it from the in-game console (or over RCON &mdash; under Docker that's
-`docker exec -i pumpkins rcon-cli /pumpkin …`):
+Then drive it from the in-game console:
 
 ```
 /pumpkin map load wumpus_8     # load a benchmark map
