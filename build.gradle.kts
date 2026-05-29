@@ -190,7 +190,7 @@ val runServer by tasks.registering(JavaExec::class) {
     classpath = files(paperJar)
     mainClass = "io.papermc.paperclip.Main"
     standardInput = System.`in`
-    jvmArgs = listOf("-Xms1G", "-Xmx2G", "--sun-misc-unsafe-memory-access=allow", "--enable-native-access=ALL-UNNAMED")
+    jvmArgs = listOf("-Xms1G", "-Xmx2G", "--enable-native-access=ALL-UNNAMED")
     args("--nogui")
 
     doFirst {

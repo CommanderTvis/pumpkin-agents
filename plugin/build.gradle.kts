@@ -51,8 +51,13 @@ dependencies {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 kotlin.compilerOptions {
-    jvmTarget = JvmTarget.JVM_21
+    jvmTarget = JvmTarget.JVM_17
     freeCompilerArgs.addAll("-Xjsr305=strict")
 }
 
