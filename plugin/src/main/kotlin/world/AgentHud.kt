@@ -18,6 +18,9 @@ class AgentHud(private val plugin: Plugin) {
 
     private val holograms: MutableMap<Int, Any> = HashMap()
 
+    /** Static per-map labels keyed by grid cell: goals, gold, iron, pits, the Wumpus and its halos. */
+    private val cellHolograms: MutableMap<Pos, Any> = HashMap()
+
     fun update(snapshot: HudSnapshot) {
         if (!available) return
         doUpdate(snapshot)
@@ -28,9 +31,16 @@ class AgentHud(private val plugin: Plugin) {
         doRemove(id)
     }
 
+    /** Clears the agent HUDs only; the static cell labels are left in place (see [showLabels]). */
     fun clear() {
         if (!available) return
         doClear()
+    }
+
+    /** Rebuilds the static per-cell labels, discarding any from a prior map. */
+    fun showLabels(labels: List<CellLabel>) {
+        if (!available) return
+        doShowLabels(labels)
     }
 
     // --- methods below touch HolographicDisplays types; only invoked when the plugin is loaded ---
@@ -67,6 +77,22 @@ class AgentHud(private val plugin: Plugin) {
 
         holograms.clear()
     }
+
+    private fun doShowLabels(labels: List<CellLabel>) {
+        val world = plugin.server.worlds.firstOrNull() ?: return
+        for (h in cellHolograms.values) {
+            val holo = h as Hologram
+            if (!holo.isDeleted) holo.delete()
+        }
+        cellHolograms.clear()
+
+        val api = HolographicDisplaysAPI.get(plugin)
+        for (label in labels) {
+            val holo = api.createHologram(Location(world, label.x + 0.5, label.y, label.z + 0.5))
+            for (line in label.lines) holo.lines.appendText(line)
+            cellHolograms[Pos(label.x, label.z)] = holo
+        }
+    }
 }
 
 /** Position + lines payload for a single agent's hologram. */
@@ -75,5 +101,13 @@ data class HudSnapshot(
     val x: Int,
     val y: Double,
     val z: Int,
+    val lines: List<String>,
+)
+
+/** A static, map-anchored label sitting above grid cell ([x], [z]) at world height [y]. */
+data class CellLabel(
+    val x: Int,
+    val z: Int,
+    val y: Double,
     val lines: List<String>,
 )

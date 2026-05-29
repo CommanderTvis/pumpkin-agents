@@ -70,8 +70,10 @@ class PrologBrain : InstrumentedBrain, Introspectable {
             if (p.stench) add("a stench")
             if (p.glitter) add("glitter")
         }
-        return if (sensed.isEmpty()) "I sense nothing here — no breeze, no stench, no glitter."
-        else "I sense ${joinWith(sensed, "and")} here."
+        // The percept is read at the start of the step, before the move is applied, so the
+        // header's pos= is already the agent's new cell — say "before this step" to be exact.
+        return if (sensed.isEmpty()) "Before this step I sensed nothing — no breeze, no stench, no glitter."
+        else "Before this step I sensed ${joinWith(sensed, "and")}."
     }
 
     private fun beliefSentence(): String {

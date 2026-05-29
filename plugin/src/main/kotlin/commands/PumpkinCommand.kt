@@ -136,7 +136,6 @@ fun registerPumpkinCommand(plugin: Plugin, runtime: AgentRuntime) {
         subcommand("metrics") {
             description = "Show the metrics summary"
             execute {
-                runtime.recordMetrics("METRICS_REQUEST")
                 val summary = runtime.metrics.summary()
                 sender.replyComponents {
                     color(ChatColor.GRAY)

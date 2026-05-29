@@ -1,6 +1,6 @@
 package io.github.commandertvis.pumpkins.e2e
 
-import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
@@ -48,15 +48,44 @@ class PaperE2eTest {
 
     @Test
     @Order(3)
-    fun `pumpkin metrics records a non-empty CSV`() {
-        paper.sendCommand("pumpkin metrics")
-        // The runtime auto-records a row on `metrics` request. Verify the CSV file directly.
+    fun `multigoal run records search effort BFS expands far more than A-star`() {
+        paper.sendCommand("pumpkin reset")
+        paper.sendCommand("pumpkin map load multigoal")
+        paper.sendCommand("pumpkin spawn BFS 1 1")
+        paper.sendCommand("pumpkin spawn ASTAR 1 1")
+        // A run records one row per agent at RAN_OUT. dps=2 -> ~0.5s/decision.
+        paper.sendCommand("pumpkin run 14")
+
         val csv = paper.metricsDir.resolve("metrics.csv")
-        check(csv.exists()) { "metrics.csv not created at $csv" }
-        val lines = csv.readText().trim().split('\n')
-        check(lines.size >= 2) { "metrics.csv must have header + at least one row" }
-        lines[0] shouldContain "phase,map,brain,agents,seed,ticks"
-        lines.drop(1).shouldNotBeEmpty()
+        val rows = awaitMultigoalRows(csv, deadlineMs = 90_000)
+
+        rows[0] shouldContain "phase,map,brain,agents,seed,ticks"
+        val cols = rows[0].split(',')
+        val nodesIdx = cols.indexOf("nodes_expanded")
+        val brainIdx = cols.indexOf("brain")
+
+        fun nodesFor(brain: String): Long = rows.drop(1)
+            .first { it.split(',')[brainIdx] == brain }
+            .split(',')[nodesIdx].toLong()
+
+        // High-water search effort over the run — not the trailing Wait-on-goal decision.
+        nodesFor("BFS") shouldBe 52L
+        nodesFor("ASTAR") shouldBe 12L
+    }
+
+    /** Poll until both multigoal agent rows have been flushed to the CSV. */
+    private fun awaitMultigoalRows(csv: java.nio.file.Path, deadlineMs: Long): List<String> {
+        val end = System.currentTimeMillis() + deadlineMs
+        while (System.currentTimeMillis() < end) {
+            if (csv.exists()) {
+                val lines = csv.readText().trim().split('\n')
+                val mapIdx = lines[0].split(',').indexOf("map")
+                val multigoal = lines.drop(1).filter { it.split(',').getOrNull(mapIdx) == "multigoal" }
+                if (multigoal.size >= 2) return listOf(lines[0]) + multigoal
+            }
+            Thread.sleep(500)
+        }
+        error("multigoal rows not recorded within ${deadlineMs}ms")
     }
 
     @Test

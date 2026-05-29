@@ -36,10 +36,12 @@ class MetricsLogger(private val outputDir: Path) {
 
     fun summary(): String {
         if (rows.isEmpty()) return "(no runs recorded yet)"
-        val header = "phase  map         brain      agents ticks path nodes  frontier msTotal ms/dec outcome"
+        val header = "%-9s %-9s %2s %5s %5s %5s %5s %4s %s".format(
+            "map", "brain", "ag", "ticks", "nodes", "front", "msTot", "ms/d", "outcome"
+        )
         val body = rows.joinToString("\n") {
-            "%-6s %-11s %-10s %6d %5d %4d %5d %8d %7d %6d %s".format(
-                it.phase, it.map, it.brain, it.agents, it.ticks, it.pathLength,
+            "%-9s %-9s %2d %5d %5d %5d %5d %4d %s".format(
+                it.map, it.brain, it.agents, it.ticks,
                 it.nodesExpanded, it.maxFrontier, it.msTotal, it.msPerDecision, it.outcome
             )
         }

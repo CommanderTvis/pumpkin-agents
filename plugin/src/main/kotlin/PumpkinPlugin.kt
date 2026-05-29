@@ -2,6 +2,7 @@ package io.github.commandertvis.pumpkins
 
 import io.github.commandertvis.plugin.json.JsonConfigurablePlugin
 import io.github.commandertvis.pumpkins.commands.registerPumpkinCommand
+import io.github.commandertvis.pumpkins.events.registerBlockProtectionHandler
 import io.github.commandertvis.pumpkins.events.registerJoinHandler
 import io.github.commandertvis.pumpkins.runtime.AgentRuntime
 import io.github.commandertvis.pumpkins.runtime.PumpkinConfig
@@ -35,6 +36,7 @@ class PumpkinPlugin : JsonConfigurablePlugin<PumpkinConfig>(PumpkinConfig()) {
 
         registerPumpkinCommand(this, runtime)
         registerJoinHandler(this)
+        registerBlockProtectionHandler(this)
         freezeWorlds()
         logger.info("PumpkinAgents enabled (decisionsPerSecond=${cfg.decisionsPerSecond}, seed=${cfg.randomSeed})")
     }

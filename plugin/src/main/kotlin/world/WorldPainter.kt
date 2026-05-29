@@ -70,7 +70,9 @@ class WorldPainter(private val world: World) {
         for (x in 0 until r.width) for (z in 0 until r.height) {
             world.getBlockAt(x, Y_CARRIED, z).type = Material.AIR
             world.getBlockAt(x, Y_OBSTACLE, z).type = Material.AIR
-            world.getBlockAt(x, Y_FLOOR, z).type = Material.AIR
+            // Restore the flat world's natural surface so a smaller map doesn't leave the
+            // previous footprint as bare dirt (clearing the floor to AIR exposes the layer below).
+            world.getBlockAt(x, Y_FLOOR, z).type = Material.GRASS_BLOCK
         }
     }
 

@@ -197,7 +197,7 @@ class BrainTest : FunSpec({
         // and not yet suspect anything.
         brain.decide(Percept.Local(state, world, breeze = false, stench = false, glitter = false, bump = false))
         val lines = brain.debugLines()
-        lines[0] shouldBe "I sense nothing here — no breeze, no stench, no glitter."
+        lines[0] shouldBe "Before this step I sensed nothing — no breeze, no stench, no glitter."
         lines[1] shouldStartWith "So far I've walked 1 cell and proven "
         lines.none { it.startsWith("I won't step into") }.shouldBeTrue()
 
@@ -206,7 +206,7 @@ class BrainTest : FunSpec({
         val south = state.copy(pos = Pos(1, 2))
         brain.decide(Percept.Local(south, world, breeze = true, stench = false, glitter = false, bump = false))
         val after = brain.debugLines()
-        after[0] shouldBe "I sense a breeze here."
+        after[0] shouldBe "Before this step I sensed a breeze."
         after.last() shouldBe "I won't step into (2,2) or (1,3) — any of them could hide a pit or the wumpus."
     }
 })
