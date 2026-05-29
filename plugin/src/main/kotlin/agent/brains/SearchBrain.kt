@@ -7,8 +7,7 @@ import io.github.commandertvis.pumpkins.agent.Percept
 import io.github.commandertvis.pumpkins.agent.search.GridPathProblem
 import io.github.commandertvis.pumpkins.agent.search.PosHeuristic
 import io.github.commandertvis.pumpkins.world.Pos
-import java.util.ArrayDeque
-import java.util.PriorityQueue
+import java.util.*
 
 /** Shared frontier-based graph search; subclasses pick the queue order. */
 abstract class SearchBrain : InstrumentedBrain {

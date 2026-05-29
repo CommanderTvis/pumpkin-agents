@@ -9,5 +9,5 @@ data class AgentState(
     val pos: Pos,
     val facing: Direction = Direction.SOUTH,
     val carrying: CellTag? = null,
-    val brain: String = "REFLEX"
+    val brain: String = "REFLEX",
 )

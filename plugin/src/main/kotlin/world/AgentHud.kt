@@ -14,10 +14,9 @@ import org.bukkit.plugin.Plugin
  * instead of `Hologram`: it keeps the HD class out of `AgentHud`'s own bytecode signature.
  */
 class AgentHud(private val plugin: Plugin) {
-    private val available: Boolean =
-        plugin.server.pluginManager.isPluginEnabled("HolographicDisplays")
+    private val available: Boolean = plugin.server.pluginManager.isPluginEnabled("HolographicDisplays")
 
-    private val holograms: HashMap<Int, Any> = HashMap()
+    private val holograms: MutableMap<Int, Any> = HashMap()
 
     fun update(snapshot: HudSnapshot) {
         if (!available) return
@@ -40,6 +39,7 @@ class AgentHud(private val plugin: Plugin) {
         val world = plugin.server.worlds.firstOrNull() ?: return
         val loc = Location(world, s.x + 0.5, s.y, s.z + 0.5)
         val existing = holograms[s.id] as Hologram?
+
         val holo: Hologram = if (existing == null || existing.isDeleted) {
             val fresh = HolographicDisplaysAPI.get(plugin).createHologram(loc)
             holograms[s.id] = fresh
@@ -48,13 +48,14 @@ class AgentHud(private val plugin: Plugin) {
             existing.setPosition(loc)
             existing
         }
+
         val lines = holo.lines
         lines.clear()
         for (line in s.lines) lines.appendText(line)
     }
 
     private fun doRemove(id: Int) {
-        val h = holograms.remove(id) as Hologram? ?: return
+        val h = holograms.remove(id) as? Hologram? ?: return
         if (!h.isDeleted) h.delete()
     }
 
@@ -63,6 +64,7 @@ class AgentHud(private val plugin: Plugin) {
             val holo = h as Hologram
             if (!holo.isDeleted) holo.delete()
         }
+
         holograms.clear()
     }
 }
@@ -73,5 +75,5 @@ data class HudSnapshot(
     val x: Int,
     val y: Double,
     val z: Int,
-    val lines: List<String>
+    val lines: List<String>,
 )

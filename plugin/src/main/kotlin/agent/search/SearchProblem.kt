@@ -33,6 +33,5 @@ class GridPathProblem(
         else -> state
     }
 
-    override fun stepCost(state: Pos, action: Action, next: Pos): Int =
-        world.cell(next).terrain.cost
+    override fun stepCost(state: Pos, action: Action, next: Pos): Int = world.cell(next).terrain.cost
 }

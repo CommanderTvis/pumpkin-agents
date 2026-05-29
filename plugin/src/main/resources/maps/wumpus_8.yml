@@ -1,5 +1,5 @@
 name: wumpus_8
-brains: [PROLOG]
+brains: [ PROLOG ]
 width: 10
 height: 10
 legend:

@@ -13,7 +13,7 @@ data class BrainStats(
     var maxFrontier: Long = 0L,
     var lastDecisionMs: Long = 0L,
     /** Positions the brain plans to walk through, in order, starting *after* its current cell. */
-    var lastPlan: List<Pos> = emptyList()
+    var lastPlan: List<Pos> = emptyList(),
 ) {
     fun reset() {
         nodesExpanded = 0

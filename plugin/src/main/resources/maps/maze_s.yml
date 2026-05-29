@@ -1,5 +1,5 @@
 name: maze_s
-brains: [BFS, DFS, UCS, ASTAR, ASTAR_EUCLID, ASTAR_BAD]
+brains: [ BFS, DFS, UCS, ASTAR, ASTAR_EUCLID, ASTAR_BAD ]
 width: 16
 height: 16
 legend:

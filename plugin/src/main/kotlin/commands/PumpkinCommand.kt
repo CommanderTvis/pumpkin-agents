@@ -3,6 +3,7 @@ package io.github.commandertvis.pumpkins.commands
 import io.github.commandertvis.plugin.command
 import io.github.commandertvis.plugin.command.arguments.IntArg
 import io.github.commandertvis.plugin.command.arguments.StringArg
+import io.github.commandertvis.plugin.reply.replyAppending
 import io.github.commandertvis.plugin.replyComponents
 import io.github.commandertvis.pumpkins.agent.Introspectable
 import io.github.commandertvis.pumpkins.runtime.AgentRuntime
@@ -84,12 +85,12 @@ fun registerPumpkinCommand(plugin: Plugin, runtime: AgentRuntime) {
                 execute {
                     runtime.loadMap(name)
                     val goalCount = (
-                        runtime.world.findTag(CellTag.GOAL_RED) +
-                            runtime.world.findTag(CellTag.GOAL_BLUE) +
-                            runtime.world.findTag(CellTag.GOAL_GREEN) +
-                            runtime.world.findTag(CellTag.GOAL_YELLOW) +
-                            runtime.world.findTag(CellTag.GOLD)
-                        ).size
+                            runtime.world.findTag(CellTag.GOAL_RED) +
+                                    runtime.world.findTag(CellTag.GOAL_BLUE) +
+                                    runtime.world.findTag(CellTag.GOAL_GREEN) +
+                                    runtime.world.findTag(CellTag.GOAL_YELLOW) +
+                                    runtime.world.findTag(CellTag.GOLD)
+                            ).size
                     sender.success("loaded $name (${runtime.world.width}x${runtime.world.height}, $goalCount goal/gold)")
                     teleportToMap(sender, runtime)
                 }
@@ -151,18 +152,36 @@ fun registerPumpkinCommand(plugin: Plugin, runtime: AgentRuntime) {
                 if (snap.isEmpty()) {
                     sender.sendMessage(ChatColor.YELLOW.toString() + "no agents")
                 } else {
-                    sender.sendMessage(
-                        ChatColor.GRAY.toString() +
-                            "map=${runtime.currentMapName} ticks=${runtime.currentScheduler()?.ticks ?: 0}"
-                    )
+                    sender.replyAppending {
+                        +ChatColor.GRAY
+                        +"map="
+                        +runtime.currentMapName
+                        +" ticks="
+                        +((runtime.currentScheduler()?.ticks ?: 0) as Any?)
+                    }
+
                     val brains = runtime.currentScheduler()?.agents ?: emptyMap()
-                    snap.forEach {
-                        sender.sendMessage(
-                            ChatColor.GRAY.toString() +
-                                " id=${it.id} brain=${it.brain} pos=(${it.pos.x},${it.pos.z}) " +
-                                "facing=${it.facing} carrying=${it.carrying ?: '-'}"
-                        )
-                        val brain = brains[it.id]?.second
+
+                    for (s in snap) {
+                        sender.replyAppending {
+                            +ChatColor.GRAY
+                            +" id="
+                            +(s.id.toString())
+                            +" brain="
+                            +s.brain
+                            +" pos=("
+                            +(s.pos.x.toString())
+                            +','
+                            +(s.pos.z.toString())
+                            +") "
+                            +"facing="
+                            +s.facing
+                            +" carrying="
+                            +(s.carrying ?: '-')
+                        }
+
+                        val brain = brains[s.id]?.second
+
                         if (brain is Introspectable) {
                             for (line in brain.debugLines()) {
                                 sender.sendMessage(ChatColor.DARK_GRAY.toString() + "   $line")

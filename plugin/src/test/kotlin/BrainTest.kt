@@ -4,21 +4,13 @@ import io.github.commandertvis.pumpkins.agent.Action
 import io.github.commandertvis.pumpkins.agent.AgentState
 import io.github.commandertvis.pumpkins.agent.Brain
 import io.github.commandertvis.pumpkins.agent.Percept
-import io.github.commandertvis.pumpkins.agent.brains.AStarBrain
-import io.github.commandertvis.pumpkins.agent.brains.AlphaBetaBrain
-import io.github.commandertvis.pumpkins.agent.brains.BfsBrain
-import io.github.commandertvis.pumpkins.agent.brains.DfsBrain
-import io.github.commandertvis.pumpkins.agent.brains.MinimaxBrain
-import io.github.commandertvis.pumpkins.agent.brains.PrologBrain
-import io.github.commandertvis.pumpkins.agent.brains.ReflexBrain
-import io.github.commandertvis.pumpkins.agent.brains.UcsBrain
+import io.github.commandertvis.pumpkins.agent.brains.*
 import io.github.commandertvis.pumpkins.agent.search.Heuristics
 import io.github.commandertvis.pumpkins.world.CellTag
 import io.github.commandertvis.pumpkins.world.GridWorld
 import io.github.commandertvis.pumpkins.world.Pos
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.booleans.shouldBeTrue
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldStartWith
@@ -28,7 +20,7 @@ private fun simulate(
     brain: Brain,
     start: Pos,
     goals: Set<Pos>,
-    maxTicks: Int = 4096
+    maxTicks: Int = 4096,
 ): Pair<Int, AgentState> {
     var state = AgentState(id = 1, pos = start, brain = brain::class.simpleName ?: "X")
     var ticks = 0
@@ -42,10 +34,12 @@ private fun simulate(
                 if (world.passable(np)) state.copy(pos = np, facing = action.dir)
                 else state.copy(facing = action.dir)
             }
+
             Action.Pickup -> {
                 val tag = world.cell(state.pos).tags.firstOrNull { it == CellTag.GOLD || it == CellTag.IRON }
                 if (tag != null && state.carrying == null) state.copy(carrying = tag) else state
             }
+
             Action.Drop -> if (state.carrying != null) state.copy(carrying = null) else state
             Action.Wait -> state
         }
@@ -55,7 +49,6 @@ private fun simulate(
 }
 
 class BrainTest : FunSpec({
-
     test("ReflexBrain follows wall on corridor and ends at goal") {
         val world = Maps.load("corridor")
         val goals = Maps.goalsOf(world)
@@ -177,7 +170,10 @@ class BrainTest : FunSpec({
                     val np = state.pos.shift(a.dir)
                     if (world.passable(np)) state.copy(pos = np, facing = a.dir) else state.copy(facing = a.dir)
                 }
-                Action.Pickup -> if (gold && state.carrying == null) state.copy(carrying = CellTag.GOLD).also { grabbed = true } else state
+
+                Action.Pickup -> if (gold && state.carrying == null) state.copy(carrying = CellTag.GOLD)
+                    .also { grabbed = true } else state
+
                 Action.Drop -> state
                 Action.Wait -> state
             }

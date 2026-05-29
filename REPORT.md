@@ -254,6 +254,8 @@ Metrics in `metrics/metrics.csv` appear from `/pumpkin run` calls. The end-to-en
 ## References
 
 - Russell, Norvig &mdash; *Artificial Intelligence: A Modern Approach*, 4th ed. Chapters 2, 3, 4, 5, 7, 8.
-- 2p-kt &mdash; Ciatto, Calegari, Omicini et al., [github.com/tuProlog/2p-kt](https://github.com/tuProlog/2p-kt) (University of Bologna).
+- 2p-kt &mdash; Ciatto, Calegari, Omicini et al., [github.com/tuProlog/2p-kt](https://github.com/tuProlog/2p-kt) (
+  University of Bologna).
 - Paper documentation &mdash; [docs.papermc.io](https://docs.papermc.io)
-- plugin-api 19.0.2 &mdash; Iaroslav Postovalov (2019&ndash;2020, maintained since),[gitlab.com/CMDR_Tvis/plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api)
+- plugin-api 19.0.2 &mdash; Iaroslav Postovalov (2019&ndash;2020, maintained
+  since),[gitlab.com/CMDR_Tvis/plugin-api](https://gitlab.com/CMDR_Tvis/plugin-api)

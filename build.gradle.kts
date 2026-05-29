@@ -29,13 +29,13 @@ val pluginApiRuntimeJarName = "runtime-$pluginApiVersion.jar"
 
 val pluginApiRuntimeUrl =
     "https://gitlab.com/api/v4/projects/10077943/packages/maven/io/github/commandertvis/plugin/runtime/" +
-        "$pluginApiVersion/$pluginApiRuntimeJarName"
+            "$pluginApiVersion/$pluginApiRuntimeJarName"
 
 val holoVersion = libs.versions.holographicdisplays.get()
 val holoJarName = "HolographicDisplays-$holoVersion.jar"
 val holoUrl =
     "https://repo.codemc.io/repository/maven-public/me/filoghost/holographicdisplays/" +
-        "holographicdisplays-plugin/$holoVersion/holographicdisplays-plugin-$holoVersion.jar"
+            "holographicdisplays-plugin/$holoVersion/holographicdisplays-plugin-$holoVersion.jar"
 
 val runDir = layout.projectDirectory.dir("run")
 val paperJar = runDir.file(paperJarName).asFile

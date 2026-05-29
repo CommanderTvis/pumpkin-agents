@@ -19,13 +19,15 @@ data class MetricsRow(
     val maxFrontier: Long,
     val msTotal: Long,
     val msPerDecision: Long,
-    val outcome: String
+    val outcome: String,
 )
 
 class MetricsLogger(private val outputDir: Path) {
     private val rows = mutableListOf<MetricsRow>()
 
-    init { outputDir.createDirectories() }
+    init {
+        outputDir.createDirectories()
+    }
 
     fun record(row: MetricsRow) {
         rows += row

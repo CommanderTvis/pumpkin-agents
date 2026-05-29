@@ -3,7 +3,6 @@ package io.github.commandertvis.pumpkins.agent.brains
 import io.github.commandertvis.pumpkins.agent.Action
 import io.github.commandertvis.pumpkins.agent.Brain
 import io.github.commandertvis.pumpkins.agent.Percept
-import io.github.commandertvis.pumpkins.world.Direction
 
 /**
  * Simple-reflex right-hand wall follower. Maintains its facing in [AgentState.facing].

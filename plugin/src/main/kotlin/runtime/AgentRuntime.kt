@@ -4,25 +4,13 @@ import io.github.commandertvis.pumpkins.agent.Action
 import io.github.commandertvis.pumpkins.agent.AgentState
 import io.github.commandertvis.pumpkins.agent.Brain
 import io.github.commandertvis.pumpkins.agent.InstrumentedBrain
-import io.github.commandertvis.pumpkins.agent.brains.AStarBrain
-import io.github.commandertvis.pumpkins.agent.brains.AlphaBetaBrain
-import io.github.commandertvis.pumpkins.agent.brains.BfsBrain
-import io.github.commandertvis.pumpkins.agent.brains.DfsBrain
-import io.github.commandertvis.pumpkins.agent.brains.MinimaxBrain
-import io.github.commandertvis.pumpkins.agent.brains.PrologBrain
-import io.github.commandertvis.pumpkins.agent.brains.ReflexBrain
-import io.github.commandertvis.pumpkins.agent.brains.UcsBrain
+import io.github.commandertvis.pumpkins.agent.brains.*
 import io.github.commandertvis.pumpkins.agent.orchestrator.Scheduler
 import io.github.commandertvis.pumpkins.agent.search.Heuristics
 import io.github.commandertvis.pumpkins.maps.MapIO
 import io.github.commandertvis.pumpkins.metrics.MetricsLogger
 import io.github.commandertvis.pumpkins.metrics.MetricsRow
-import io.github.commandertvis.pumpkins.world.AgentHud
-import io.github.commandertvis.pumpkins.world.Direction
-import io.github.commandertvis.pumpkins.world.GridWorld
-import io.github.commandertvis.pumpkins.world.HudSnapshot
-import io.github.commandertvis.pumpkins.world.Pos
-import io.github.commandertvis.pumpkins.world.WorldPainter
+import io.github.commandertvis.pumpkins.world.*
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.plugin.Plugin
@@ -35,12 +23,13 @@ class AgentRuntime(
     val mapsDir: Path,
     val metricsDir: Path,
     val decisionsPerSecond: Int,
-    val seed: Long
+    val seed: Long,
 ) {
     var world: GridWorld = GridWorld.empty(8, 8)
         private set
     var currentMapName: String = "(empty)"
         private set
+
     /** Brain names this map was designed for, or `null` to allow any brain. */
     var allowedBrains: List<String>? = null
         private set
@@ -48,12 +37,14 @@ class AgentRuntime(
 
     /** First Bukkit world ("world"); the canvas the [WorldPainter] writes into. */
     private val bukkitWorld get() = plugin.server.worlds.firstOrNull()
+
     // Lazy so the painter's `painted` region survives across map loads and the prior
     // footprint is cleared on the next `paint()`.
     private val painter: WorldPainter? by lazy { bukkitWorld?.let { WorldPainter(it) } }
     private val hud: AgentHud by lazy { AgentHud(plugin) }
     private val particles: BrainParticles by lazy { BrainParticles(plugin) }
     private val placedAgents = HashMap<Int, Slot>()
+
     /** Last action each agent picked — drives the "last" line in the hologram. */
     private val lastActions = HashMap<Int, Action>()
 
@@ -174,7 +165,7 @@ class AgentRuntime(
         stop()
         // Erase any agent blocks from the world before clearing state.
         painter?.let { p ->
-            placedAgents.values.forEach { slot ->
+            for (slot in placedAgents.values) {
                 p.setCarried(slot.pos, null, slot.level)
                 p.removeAgent(slot.pos, slot.level)
             }
@@ -202,9 +193,10 @@ class AgentRuntime(
         val p = painter ?: return
         val cur = snapshot()
         val newSlots = HashMap<Int, Slot>(cur.size)
-        cur.groupBy { it.pos }.forEach { (pos, group) ->
-            group.sortedBy { it.id }.forEachIndexed { idx, a -> newSlots[a.id] = Slot(pos, idx) }
-        }
+        cur.groupBy { it.pos }
+            .forEach { (pos, group) ->
+                group.sortedBy { it.id }.forEachIndexed { idx, a -> newSlots[a.id] = Slot(pos, idx) }
+            }
         for ((id, oldSlot) in placedAgents.toMap()) {
             val newSlot = newSlots[id]
             if (newSlot == null || newSlot != oldSlot) {
@@ -309,6 +301,7 @@ class AgentRuntime(
     companion object {
         /** Quiet enough not to drown out the demonstrator. */
         private const val SOUND_VOLUME = 0.4f
+
         /** Distance above the carried-block slot at which the floating HUD anchors. */
         private const val HUD_Y_OFFSET = 1.8
     }

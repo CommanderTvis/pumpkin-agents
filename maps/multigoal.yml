@@ -1,5 +1,5 @@
 name: multigoal
-brains: [BFS, ASTAR, UCS]
+brains: [ BFS, ASTAR, UCS ]
 width: 24
 height: 24
 legend:

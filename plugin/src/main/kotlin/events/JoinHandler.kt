@@ -15,7 +15,7 @@ fun registerJoinHandler(plugin: Plugin) {
         player.sendMessage(
             "$g${ChatColor.BOLD}Welcome to PumpkinAgents.$rst",
             "$gray You're standing on a flat world. " +
-                "The plugin animates ${y}CARVED_PUMPKIN$gray blocks as autonomous AI agents.$rst",
+                    "The plugin animates ${y}CARVED_PUMPKIN$gray blocks as autonomous AI agents.$rst",
             "$gray Try the following:$rst",
             "  $w/pumpkin map load corridor$gray   $rst- load a benchmark map",
             "  $w/pumpkin spawn BFS 1 1$gray       $rst- create a BFS agent at (1, 1)",
@@ -24,7 +24,7 @@ fun registerJoinHandler(plugin: Plugin) {
             "  $w/pumpkin state$gray               $rst- show all agents and their positions",
             "  $w/pumpkin metrics$gray             $rst- print the per-run metrics table",
             "$gray Brains available: " +
-                "${y}REFLEX BFS DFS UCS ASTAR ASTAR_EUCLID ASTAR_BAD MINIMAX ALPHABETA PROLOG$rst"
+                    "${y}REFLEX BFS DFS UCS ASTAR ASTAR_EUCLID ASTAR_BAD MINIMAX ALPHABETA PROLOG$rst"
         )
     }
 }

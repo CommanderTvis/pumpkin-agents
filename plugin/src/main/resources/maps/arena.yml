@@ -1,5 +1,5 @@
 name: arena
-brains: [MINIMAX, ALPHABETA, REFLEX]
+brains: [ MINIMAX, ALPHABETA, REFLEX ]
 width: 20
 height: 20
 legend:

@@ -1,10 +1,6 @@
 package io.github.commandertvis.pumpkins.agent.brains
 
-import io.github.commandertvis.pumpkins.agent.Action
-import io.github.commandertvis.pumpkins.agent.BrainStats
-import io.github.commandertvis.pumpkins.agent.InstrumentedBrain
-import io.github.commandertvis.pumpkins.agent.Introspectable
-import io.github.commandertvis.pumpkins.agent.Percept
+import io.github.commandertvis.pumpkins.agent.*
 import io.github.commandertvis.pumpkins.world.CellTag
 import io.github.commandertvis.pumpkins.world.Direction
 import io.github.commandertvis.pumpkins.world.GridWorld

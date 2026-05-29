@@ -13,7 +13,7 @@ import io.github.commandertvis.pumpkins.world.GridWorld
  */
 class Scheduler(
     val world: GridWorld,
-    initialAgents: List<Pair<AgentState, Brain>>
+    initialAgents: List<Pair<AgentState, Brain>>,
 ) {
     private val state = LinkedHashMap<Int, Pair<AgentState, Brain>>()
     val agents: Map<Int, Pair<AgentState, Brain>> get() = state
@@ -62,6 +62,7 @@ class Scheduler(
             // Auto-pickup: stepping onto a resource cell while empty-handed lifts it.
             autoPickup(moved)
         }
+
         Action.Pickup -> autoPickup(s)
         Action.Drop -> if (s.carrying != null) s.copy(carrying = null) else s
         Action.Wait -> s

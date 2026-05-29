@@ -4,14 +4,7 @@ import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldNotContain
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.TestMethodOrder
-import org.junit.jupiter.api.Timeout
+import org.junit.jupiter.api.*
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.exists
 import kotlin.io.path.readText
@@ -33,14 +26,16 @@ class PaperE2eTest {
         if (::paper.isInitialized) paper.close()
     }
 
-    @Test @Order(1)
+    @Test
+    @Order(1)
     fun `plugin loads and reports enabled`() {
         val out = paper.sendCommand("plugins")
         // Paper formats plugins as colored chips with each name separated by a comma
         out shouldContain "PumpkinAgents"
     }
 
-    @Test @Order(2)
+    @Test
+    @Order(2)
     fun `pumpkin map load corridor + spawn BFS + step reaches goal`() {
         paper.sendCommand("pumpkin map load corridor")
         paper.sendCommand("pumpkin spawn BFS 1 1")
@@ -51,7 +46,8 @@ class PaperE2eTest {
         state shouldContain "pos=(7,1)"
     }
 
-    @Test @Order(3)
+    @Test
+    @Order(3)
     fun `pumpkin metrics records a non-empty CSV`() {
         paper.sendCommand("pumpkin metrics")
         // The runtime auto-records a row on `metrics` request. Verify the CSV file directly.
@@ -63,7 +59,8 @@ class PaperE2eTest {
         lines.drop(1).shouldNotBeEmpty()
     }
 
-    @Test @Order(4)
+    @Test
+    @Order(4)
     fun `prolog brain navigates wumpus_4 without dying`() {
         paper.sendCommand("pumpkin reset")
         paper.sendCommand("pumpkin map load wumpus_4")
@@ -74,7 +71,8 @@ class PaperE2eTest {
         state shouldContain "brain=PROLOG"
     }
 
-    @Test @Order(5)
+    @Test
+    @Order(5)
     fun `server log has no stack traces or SEVERE entries`() {
         // Give Paper a moment to flush remaining log lines.
         Thread.sleep(500)

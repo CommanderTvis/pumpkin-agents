@@ -13,7 +13,12 @@ sealed interface Percept {
         override val self: AgentState,
         override val world: GridWorld,
         val others: List<AgentState> = emptyList(),
-        val goalTags: Set<CellTag> = setOf(CellTag.GOAL_RED, CellTag.GOAL_BLUE, CellTag.GOAL_GREEN, CellTag.GOAL_YELLOW)
+        val goalTags: Set<CellTag> = setOf(
+            CellTag.GOAL_RED,
+            CellTag.GOAL_BLUE,
+            CellTag.GOAL_GREEN,
+            CellTag.GOAL_YELLOW
+        ),
     ) : Percept {
         fun goalPositions(): List<Pos> = goalTags.flatMap { world.findTag(it) }
     }
@@ -25,6 +30,6 @@ sealed interface Percept {
         val breeze: Boolean,
         val stench: Boolean,
         val glitter: Boolean,
-        val bump: Boolean
+        val bump: Boolean,
     ) : Percept
 }

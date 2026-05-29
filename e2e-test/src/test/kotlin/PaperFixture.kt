@@ -1,8 +1,6 @@
 package io.github.commandertvis.pumpkins.e2e
 
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
 import java.net.ServerSocket
 import java.nio.file.Path
 import java.util.concurrent.LinkedBlockingQueue
@@ -21,7 +19,7 @@ class PaperFixture private constructor(
     val rconHost: String,
     val rconPort: Int,
     val rconPassword: String,
-    private val readerThreads: List<Thread>
+    private val readerThreads: List<Thread>,
 ) : AutoCloseable {
     val rcon: RconClient by lazy {
         val client = RconClient(rconHost, rconPort, rconPassword)
@@ -135,21 +133,25 @@ class PaperFixture private constructor(
             // Stream stdout/stderr into bounded queues for assertions later
             val stdoutQ = LinkedBlockingQueue<String>(8192)
             val stderrQ = LinkedBlockingQueue<String>(8192)
+
             val tOut = thread(start = true, isDaemon = true, name = "paper-stdout") {
-                BufferedReader(InputStreamReader(proc.inputStream)).use { r ->
-                    r.lineSequence().forEach {
-                        println("[paper] $it")
-                        if (stdoutQ.remainingCapacity() > 0) stdoutQ.offer(it)
+                proc.inputStream.bufferedReader().useLines { lines ->
+                    for (l in lines) {
+                        println("[paper] $l")
+
+                        if (stdoutQ.remainingCapacity() > 0)
+                            stdoutQ.offer(l)
                     }
                 }
             }
+
             val tErr = thread(start = true, isDaemon = true, name = "paper-stderr") {
-                BufferedReader(InputStreamReader(proc.errorStream)).use { r ->
-                    r.lineSequence().forEach {
-                        System.err.println("[paper!] $it")
+                proc.errorStream.bufferedReader().useLines { lines ->
+                    for (l in lines) {
+                        System.err.println("[paper!] $l")
 
                         if (stderrQ.remainingCapacity() > 0)
-                            stderrQ.offer(it)
+                            stderrQ.offer(l)
                     }
                 }
             }
@@ -160,10 +162,8 @@ class PaperFixture private constructor(
             while (System.nanoTime() < readyDeadline) {
                 val line = stdoutQ.poll(200, TimeUnit.MILLISECONDS) ?: continue
                 if ("Done (" in line && "For help" in line) {
-                    ready = true; break
-                }
-                if ("RCON running" in line || "RCON listening" in line) {
-                    // We can authenticate now even if "Done" hasn't printed.
+                    ready = true
+                    break
                 }
             }
             if (!ready) {
